@@ -4,6 +4,10 @@ const galleryHeader = document.querySelector('.gallery-header');
 const searchBtn = document.getElementById('search-btn');
 const sliderBtn = document.getElementById('create-slider');
 const sliderContainer = document.getElementById('sliders');
+const errorId = document.getElementById('error');
+
+const creatSlaider = document.getElementById('creatSlaider');
+
 // selected image
 let sliders = [];
 
@@ -26,14 +30,36 @@ const showImages = (images) => {
     });
     spinner();
 };
-
+//
 const getImages = (query) => {
     spinner();
     fetch(`https://pixabay.com/api/?key=${KEY}=${query}&image_type=photo&pretty=true`)
         .then((response) => response.json())
-        .then((data) => showImages(data.hits))
-        .catch((err) => console.log(err));
+        .then((data) => {
+            if (data.hits == 0) {
+                spinner();
+
+                errorId.innerHTML = ` <h3 class="mt-5 text-danger">No matching image!! Please Try again..</h3>`;
+                creatSlaider.classList.add('d-none');
+                gallery.innerHTML = '';
+            } else {
+                showImages(data.hits);
+                creatSlaider.classList.remove('d-none');
+
+                errorId.innerHTML = '';
+            }
+        })
+        .catch((value) => {
+            spinner();
+
+            errorId.innerHTML = ` <h3 class="mt-5 text-danger">No matching image!! Please Try again provide meningfull Name..</h3>`;
+            creatSlaider.classList.add('d-none');
+            gallery.innerHTML = '';
+        });
 };
+
+// .catch((err) => console.log(err));
+
 let slideIndex = 0;
 const selectItem = (event, img) => {
     let element = event.target;
